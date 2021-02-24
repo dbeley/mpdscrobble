@@ -3,11 +3,11 @@ Description=mpdscrobble.service
 
 [Service]
 Type=simple
-WorkingDirectory=%h/Documents/mpdscrobble
+WorkingDirectory=%h
 # Pipenv Installation
-ExecStart=/usr/bin/python3 .venv/bin/mpdscrobble --debug
+# ExecStart=%h/Documents/mpdscrobble/.venv/bin/mpdscrobble
 # Classic Installation
-# ExecStart=/usr/bin/python3 mpdscrobble --debug
+ExecStart=/usr/bin/python3 mpdscrobble
 
 [Install]
 WantedBy=multi-user.target

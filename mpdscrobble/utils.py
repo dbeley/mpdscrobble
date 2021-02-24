@@ -3,6 +3,7 @@ import pylast
 import datetime
 import logging
 import configparser
+import os
 
 from mpd import MPDClient
 
@@ -19,7 +20,6 @@ class MPDScrobbleNetwork:
     def mpdscrobble_update_now_playing(self, song):
         for i in self.networks:
             try:
-                logger.debug(f"{i}")
                 i.mpdscrobble_update_now_playing(song)
             except Exception as e:
                 logger.error(e)
@@ -27,47 +27,16 @@ class MPDScrobbleNetwork:
     def mpdscrobble_scrobble(self, song):
         for i in self.networks:
             try:
-                logger.debug(f"{i}")
                 i.mpdscrobble_scrobble(song)
             except Exception as e:
                 logger.error(e)
-
-
-class MPDScrobbleLibreFMNetwork(pylast.LibreFMNetwork):
-    """Class to interact with Libre.FM."""
-
-    def __init__(self, username, password):
-        pylast.LibreFMNetwork.__init__(
-            self, username=username, password_hash=pylast.md5(password)
-        )
-
-    def __str__(self):
-        return "libre.fm"
-
-    def mpdscrobble_scrobble(self, track):
-
-        self.scrobble(
-            artist=track.artist,
-            title=track.title,
-            timestamp=track.timestamp,
-            album=track.album,
-        )
-
-    def mpdscrobble_update_now_playing(self, track):
-
-        self.update_now_playing(
-            artist=track.artist,
-            title=track.title,
-            album=track.album,
-            track_number=track.track,
-            duration=int(track.duration),
-        )
 
 
 class MPDScrobbleLastFMNetwork(pylast.LastFMNetwork):
     """Class to interact with Last.FM."""
 
     def __init__(self, username, password, api_key, api_secret):
+        self.username = username
         pylast.LastFMNetwork.__init__(
             self,
             username=username,
@@ -77,7 +46,7 @@ class MPDScrobbleLastFMNetwork(pylast.LastFMNetwork):
         )
 
     def __str__(self):
-        return "last.fm"
+        return f"last.fm: user {self.username}."
 
     def mpdscrobble_scrobble(self, track):
 
@@ -94,8 +63,8 @@ class MPDScrobbleLastFMNetwork(pylast.LastFMNetwork):
             artist=track.artist,
             title=track.title,
             album=track.album,
-            track_number=track.track,
             duration=int(track.duration),
+            track_number=track.track,
         )
 
 
@@ -164,31 +133,20 @@ class MPDScrobbleMPDConnection(MPDClient):
 
 
 def read_config(config_file):
-    try:
-        config = configparser.ConfigParser()
-        config.read(config_file)
-        return config
-    except Exception as e:
-        logger.error(f"Error reading config file: {e}.")
-        logger.error(
-            f"Create a valid config file in ~/.config/mpdscrobble/mpdscrobble.conf or use the -c/--config-file flag."
-        )
+    config = configparser.ConfigParser()
+    config.read(os.path.expanduser(config_file))
+    return config
 
 
 def create_network(config):
     networks = []
     for i in config.sections():
-        if config[i]["network"].lower() in ["last.fm", "lastfm"]:
-            networks.append(
-                MPDScrobbleLastFMNetwork(
-                    config[i]["username"],
-                    config[i]["password"],
-                    config[i]["api_key"],
-                    config[i]["api_secret"],
-                )
+        networks.append(
+            MPDScrobbleLastFMNetwork(
+                config[i]["username"],
+                config[i]["password"],
+                config[i]["api_key"],
+                config[i]["api_secret"],
             )
-        elif config[i]["network"].lower() in ["libre.fm", "librefm"]:
-            networks.append(
-                MPDScrobbleLibreFMNetwork(config[i]["username"], config[i]["password"])
-            )
+        )
     return MPDScrobbleNetwork(networks)

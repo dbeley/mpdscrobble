@@ -1,12 +1,10 @@
 # mpdscrobble
 
-A simple Last.fm/Libre.fm scrobbler for MPD.
+A simple Last.fm scrobbler for MPD.
 
-If you are searching for a mpd-compatible last.fm or libre.fm scrobbler, check out first mpdscribble.
-
-Be aware that mpdscrobble has less features than mpdscribble:
+If you are searching for a mpd-compatible last.fm scrobbler, check out first mpdscribble, as mpdscrobble has less features than mpdscribble:
 - no journal of failed scrobbles
-- it needs a pair of API key/secret
+- it needs a pair of Last.fm API key/secret instead of just username/password
 
 The script `mpdscribble_history.py` can be used to scrobble a list of tracks in a mpdscribble journal file.
 

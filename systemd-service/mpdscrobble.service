@@ -1,0 +1,13 @@
+[Unit]
+Description=mpdscrobble.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Documents/mpdscrobble
+# Pipenv Installation
+ExecStart=/usr/bin/python3 .venv/bin/mpdscrobble --debug
+# Classic Installation
+# ExecStart=/usr/bin/python3 mpdscrobble --debug
+
+[Install]
+WantedBy=multi-user.target

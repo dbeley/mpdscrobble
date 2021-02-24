@@ -2,4 +2,5 @@ tags
 __pycache__/
 *.egg-info/
 build/
+dist/
 mpdscrobble.conf

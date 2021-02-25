@@ -61,7 +61,7 @@ def main():
 
 def parse_args():
     format = "%(levelname)s :: %(message)s"
-    parser = argparse.ArgumentParser(description="Python skeleton")
+    parser = argparse.ArgumentParser(description="A simple Last.fm scrobbler for MPD.")
     parser.add_argument(
         "--debug",
         help="Display debugging information.",
@@ -69,9 +69,6 @@ def parse_args():
         dest="loglevel",
         const=logging.DEBUG,
         default=logging.INFO,
-    )
-    parser.add_argument(
-        "positional_argument", nargs="?", type=str, help="Positional argument."
     )
     parser.add_argument(
         "-c",

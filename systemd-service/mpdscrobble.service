@@ -3,6 +3,9 @@ Description=mpdscrobble.service
 
 [Service]
 Type=simple
+Restart=always
+RestartSec=5
+StartLimitBurst=20
 WorkingDirectory=%h
 # Pipenv Installation
 # ExecStart=%h/Documents/mpdscrobble/.venv/bin/mpdscrobble

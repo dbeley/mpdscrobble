@@ -31,8 +31,12 @@ def read_journal(journal_file):
     ]
     result = []
     for i in obj_tracks:
-        track = MPDScrobbleTrack(artist=i["artist"], title=i["title"], album=i["album"])
-        track.timestamp = i["timestamp"]
+        track = MPDScrobbleTrack(
+            artist=i["artist"],
+            title=i["title"],
+            album=i["album"],
+            timestamp=i["timestamp"],
+        )
         result.append(track)
     return result
 

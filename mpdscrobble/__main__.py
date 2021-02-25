@@ -5,32 +5,37 @@ import logging
 import time
 import argparse
 from .utils import (
-    MPDScrobbleMPDConnection,
     read_config,
     create_network,
 )
+from .mpdscrobble import MPDScrobbleMPDConnection
 
 
 logger = logging.getLogger()
 # scrobble will be sent if the track had at least a 40% completion
 SCROBBLE_PERCENTAGE = 40.0
+DEFAULT_HOST = "localhost"
+DEFAULT_PORT = 6600
 
 
 def loop(args, networks, client, cached_song):
-    while True:
-        time.sleep(10)
-        current_song = client.mpdscrobble_currentsong()
-        logger.debug(f"{current_song.debug()}\n{cached_song.debug()}")
-        if cached_song != current_song:
-            if cached_song.percentage > SCROBBLE_PERCENTAGE:
-                if not args.dry_run:
-                    logger.info(f"Scrobbling {cached_song}.")
-                    networks.mpdscrobble_scrobble(cached_song)
-                else:
-                    logger.warning("Dry-run mode enabled.")
-            logger.debug(f"Updating now playing to {cached_song}.")
-            networks.mpdscrobble_update_now_playing(current_song)
-        cached_song = client.mpdscrobble_currentsong()
+    try:
+        while True:
+            time.sleep(10)
+            current_song = client.mpdscrobble_currentsong()
+            logger.debug(f"{current_song.debug()}\n{cached_song.debug()}")
+            if cached_song != current_song:
+                if cached_song.percentage > SCROBBLE_PERCENTAGE:
+                    if not args.dry_run:
+                        logger.info(f"Scrobbling {cached_song}.")
+                        networks.mpdscrobble_scrobble(cached_song)
+                    else:
+                        logger.warning("Dry-run mode enabled.")
+                logger.debug(f"Updating now playing to {cached_song}.")
+                networks.mpdscrobble_update_now_playing(current_song)
+            cached_song = client.mpdscrobble_currentsong()
+    except Exception as e:
+        logger.error(e)
 
 
 def main():
@@ -43,7 +48,15 @@ def main():
 
     networks = create_network(config)
 
-    client = MPDScrobbleMPDConnection()
+    host = DEFAULT_HOST
+    port = DEFAULT_PORT
+    if "mpdscrobble" in config:
+        if "host" in config["mpdscrobble"]:
+            host = config["mpdscrobble"]["host"]
+        if "port" in config["mpdscrobble"]:
+            port = config["mpdscrobble"]["port"]
+
+    client = MPDScrobbleMPDConnection(host, port)
     client.mpdscrobble_connect()
 
     # Init
@@ -52,9 +65,12 @@ def main():
     networks.mpdscrobble_update_now_playing(cached_song)
 
     # Loop
+    DELAY = 10
     while True:
         loop(args, networks, client, cached_song)
-        logger.error("MPD Client crashed. Restarting.")
+        logger.error(f"MPD Client crashed. Waiting {DELAY} seconds before restarting.")
+        time.sleep(DELAY)
+        DELAY = DELAY * 2
         client.mpdscrobble_restart()
         cached_song = client.mpdscrobble_currentsong()
 

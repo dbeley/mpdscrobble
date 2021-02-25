@@ -6,7 +6,7 @@ If you are searching for a mpd-compatible last.fm scrobbler, check out first [mp
 - no journal of failed scrobbles
 - it needs a pair of Last.fm API key/secret instead of just username/password
 
-The script [`mpdscribble_history.py`](https://github.com/dbeley/mpdscrobble/blob/main/mpdscribble_history.py) can be used to scrobble a list of tracks from a mpdscribble journal file.
+If you need to scrobble tracks from a mpdscribble journal file, you can use the [`mpdscribble_history.py`](https://github.com/dbeley/mpdscrobble/blob/main/mpdscribble_history.py) script.
 
 ## Requirements
 
@@ -19,20 +19,20 @@ Classic installation :
 
 ```
 pip install mpdscrobble
-mkdir -p ~/.config/mpdscrobble
-curl https://raw.githubusercontent.com/dbeley/mpdscrobble/main/mpdscrobble.example.conf > ~/.config/mpdscrobble/mpdscrobble.conf
 mpdscrobble -h
 ```
+You will then need to create a config file (see *Configuration* section).
 
-If you need the systemd-service, you will have to install it manually (see *Scheduling* section).
+If you want the systemd-service, you will have to install it manually (see *Scheduling* section).
 
 ### Run from source
 
 #### First method
+
 ```
 git clone https://github.com/dbeley/mpdscrobble
 cd mpdscrobble
-python setup.py install
+python setup.py install --user
 mpdscrobble -h
 ```
 
@@ -51,22 +51,23 @@ If you are an Archlinux user, you can install the AUR package [mpdscrobble-git](
 
 ```
 yay -S mpdscrobble-git
-mkdir -p ~/.config/mpdscrobble
-curl https://raw.githubusercontent.com/dbeley/mpdscrobble/main/mpdscrobble.example.conf > ~/.config/mpdscrobble/mpdscrobble.conf
-systemctl --user daemon-reload
-systemctl --user enable --now mpdscrobble
 ```
+
+The systemd service file will be automatically installed.
 
 ## Configuration
 
 See [`mpdscrobble.example.conf`](https://github.com/dbeley/mpdscrobble/blob/main/mpdscrobble.example.conf) for an example.
 
+By default, `mpdscrobble` search a config file at `~/.config/mpdscrobble/mpdscrobble.conf`, but you can override the default location with the `-c/--config` flag (see *Usage* section).
+
 ## Scheduling
 
 ```
-wget https://raw.githubusercontent.com/dbeley/mpdscrobble/main/systemd-service/mpdscrobble.service > ~/.config/systemd/user/mpdscrobble.service
+curl https://raw.githubusercontent.com/dbeley/mpdscrobble/main/systemd-service/mpdscrobble.service > ~/.config/systemd/user/mpdscrobble.service
 systemctl --user daemon-reload
 systemctl --user enable --now mpdscrobble
+systemctl --user status mpdscribble
 ```
 
 If you installed mpdscrobble from source you can also use:
@@ -75,6 +76,7 @@ If you installed mpdscrobble from source you can also use:
 cp systemd-service/* ~/.config/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable --now mpdscrobble
+systemctl --user status mpdscribble
 ```
 
 ## Usage

@@ -4,14 +4,10 @@ After=mpd.service
 
 [Service]
 Type=simple
-Restart=always
-RestartSec=5
-StartLimitBurst=20
-WorkingDirectory=%h
 # Pipenv Installation
 # ExecStart=%h/Documents/mpdscrobble/.venv/bin/mpdscrobble
 # Classic Installation
-ExecStart=/usr/bin/mpdscrobble
+ExecStart=/usr/bin/python3 -m mpdscrobble
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target

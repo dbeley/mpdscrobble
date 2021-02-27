@@ -10,4 +10,4 @@ Type=simple
 ExecStart=/usr/bin/python3 -m mpdscrobble
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target

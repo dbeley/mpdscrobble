@@ -1,5 +1,6 @@
 [Unit]
 Description=mpdscrobble.service
+After=mpd.service
 
 [Service]
 Type=simple

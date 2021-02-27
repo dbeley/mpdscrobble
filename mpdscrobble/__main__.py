@@ -23,7 +23,9 @@ def loop(args, networks, client, cached_song):
         while True:
             time.sleep(10)
             current_song = client.mpdscrobble_currentsong()
-            logger.debug(f"{current_song.debug()}\n{cached_song.debug()}")
+            logger.debug(
+                f"Current: {current_song.debug()}\nCached: {cached_song.debug()}"
+            )
             if cached_song != current_song:
                 if cached_song.percentage > SCROBBLE_PERCENTAGE:
                     if not args.dry_run:
@@ -56,8 +58,8 @@ def main():
         if "port" in config["mpdscrobble"]:
             port = config["mpdscrobble"]["port"]
 
-    client = MPDScrobbleMPDConnection(host, port)
-    client.mpdscrobble_connect()
+    client = MPDScrobbleMPDConnection()
+    client.mpdscrobble_connect(host, port)
 
     # Init
     cached_song = client.mpdscrobble_currentsong()

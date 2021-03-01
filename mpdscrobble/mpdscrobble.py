@@ -47,7 +47,6 @@ class MPDScrobbleLastFMNetwork(pylast.LastFMNetwork):
         return f"last.fm: user {self.username}."
 
     def mpdscrobble_scrobble(self, track):
-
         self.scrobble(
             artist=track.artist,
             title=track.title,
@@ -73,7 +72,7 @@ class MPDScrobbleTrack:
         self,
         artist,
         title,
-        album,
+        album=None,
         track=None,
         date=None,
         duration=1.0,
@@ -126,7 +125,7 @@ class MPDScrobbleMPDConnection(MPDClient):
     def mpdscrobble_restart(self):
         self.close()
         self.disconnect()
-        self.mpdscrobble_start()
+        self.mpdscrobble_connect()
 
     def mpdscrobble_currentsong(self):
         currentsong = self.currentsong()
@@ -134,9 +133,9 @@ class MPDScrobbleMPDConnection(MPDClient):
         return MPDScrobbleTrack(
             artist=currentsong["artist"],
             title=currentsong["title"],
-            track=currentsong["track"][0],
-            album=currentsong["album"],
-            date=currentsong["date"],
+            track=currentsong["track"][0] if "track" in currentsong else None,
+            album=currentsong["album"] if "album" in currentsong else None,
+            date=currentsong["date"] if "date" in currentsong else None,
             duration=currentsong["duration"],
             elapsed=status["elapsed"],
         )

@@ -6,12 +6,16 @@ import argparse
 from mpdscrobble.utils import (
     read_config,
     create_network,
+)
+from mpdscrobble.mpdscrobble import (
     MPDScrobbleMPDConnection,
     MPDScrobbleTrack,
 )
 
 
 logger = logging.getLogger()
+DEFAULT_HOST = "localhost"
+DEFAULT_PORT = 6600
 
 
 def read_journal(journal_file):
@@ -48,13 +52,20 @@ def main():
 
     networks = create_network(config)
 
+    host = DEFAULT_HOST
+    port = DEFAULT_PORT
+    if "mpdscrobble" in config:
+        if "host" in config["mpdscrobble"]:
+            host = config["mpdscrobble"]["host"]
+        if "port" in config["mpdscrobble"]:
+            port = config["mpdscrobble"]["port"]
+
     client = MPDScrobbleMPDConnection()
-    client.mpdscrobble_connect()
+    client.mpdscrobble_connect(host, port)
 
     for index, i in enumerate(mpdscribble_journal):
-        for j in networks:
-            logger.info(i)
-            j.mpdscrobble_scrobble(i)
+        logger.info(i)
+        networks.mpdscrobble_scrobble(i)
 
 
 def parse_args():

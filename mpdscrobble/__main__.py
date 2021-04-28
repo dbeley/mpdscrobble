@@ -16,12 +16,13 @@ logger = logging.getLogger()
 SCROBBLE_PERCENTAGE = 40.0
 DEFAULT_HOST = "localhost"
 DEFAULT_PORT = 6600
+LOOP_DELAY = 10
 
 
 def loop(args, networks, client, cached_song):
     try:
         while True:
-            time.sleep(10)
+            time.sleep(LOOP_DELAY)
             current_song = client.mpdscrobble_currentsong()
             if current_song and cached_song:
                 logger.debug(
@@ -62,18 +63,16 @@ def main():
     client = MPDScrobbleMPDConnection()
     client.mpdscrobble_connect(host, port)
 
-    # Init
-    cached_song = client.mpdscrobble_currentsong()
-    logger.debug(f"Updating now playing to {cached_song}.")
-    networks.mpdscrobble_update_now_playing(cached_song)
-
     # Loop
-    DELAY = 10
+    cached_song = client.mpdscrobble_currentsong()
     while True:
+        timeout = 10
         loop(args, networks, client, cached_song)
-        logger.error(f"MPD Client crashed. Waiting {DELAY} seconds before restarting.")
-        time.sleep(DELAY)
-        DELAY = DELAY * 2
+        logger.error(
+            f"MPD Client crashed. Waiting {timeout} seconds before restarting."
+        )
+        time.sleep(timeout)
+        timeout = timeout * 2
         client.mpdscrobble_restart()
         cached_song = client.mpdscrobble_currentsong()
 

@@ -23,18 +23,19 @@ def loop(args, networks, client, cached_song):
         while True:
             time.sleep(10)
             current_song = client.mpdscrobble_currentsong()
-            logger.debug(
-                f"Current: {current_song.debug()}\nCached: {cached_song.debug()}"
-            )
-            if cached_song != current_song:
-                if cached_song.percentage > SCROBBLE_PERCENTAGE:
-                    if not args.dry_run:
-                        logger.info(f"Scrobbling {cached_song}.")
-                        networks.mpdscrobble_scrobble(cached_song)
-                    else:
-                        logger.warning("Dry-run mode enabled.")
-                logger.debug(f"Updating now playing to {cached_song}.")
-                networks.mpdscrobble_update_now_playing(current_song)
+            if current_song and cached_song:
+                logger.debug(
+                    f"Current: {current_song.debug()}\nCached: {cached_song.debug()}"
+                )
+                if cached_song != current_song:
+                    if cached_song.percentage > SCROBBLE_PERCENTAGE:
+                        if not args.dry_run:
+                            logger.info(f"Scrobbling {cached_song}.")
+                            networks.mpdscrobble_scrobble(cached_song)
+                        else:
+                            logger.warning("Dry-run mode enabled.")
+                    logger.debug(f"Updating now playing to {cached_song}.")
+                    networks.mpdscrobble_update_now_playing(current_song)
             cached_song = client.mpdscrobble_currentsong()
     except Exception as e:
         logger.error(e)

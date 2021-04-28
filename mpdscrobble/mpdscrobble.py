@@ -130,12 +130,15 @@ class MPDScrobbleMPDConnection(MPDClient):
     def mpdscrobble_currentsong(self):
         currentsong = self.currentsong()
         status = self.status()
-        return MPDScrobbleTrack(
-            artist=currentsong["artist"],
-            title=currentsong["title"],
-            track=currentsong["track"][0] if "track" in currentsong else None,
-            album=currentsong["album"] if "album" in currentsong else None,
-            date=currentsong["date"] if "date" in currentsong else None,
-            duration=currentsong["duration"],
-            elapsed=status["elapsed"],
-        )
+        if all([x in currentsong for x in ["artist", "title", "duration"]]) and "elapsed" in status:
+            return MPDScrobbleTrack(
+                artist=currentsong["artist"],
+                title=currentsong["title"],
+                track=currentsong["track"][0] if "track" in currentsong else None,
+                album=currentsong["album"] if "album" in currentsong else None,
+                date=currentsong["date"] if "date" in currentsong else None,
+                duration=currentsong["duration"],
+                elapsed=status["elapsed"],
+            )
+        else:
+            return None

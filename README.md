@@ -63,17 +63,15 @@ By default, `mpdscrobble` search a config file at `~/.config/mpdscrobble/mpdscro
 
 ## Scheduling
 
+If you installed the AUR package on Archlinux, the systemd service is automatically installed.
 ```
-curl https://raw.githubusercontent.com/dbeley/mpdscrobble/main/systemd-service/mpdscrobble.service > ~/.config/systemd/user/mpdscrobble.service
-systemctl --user daemon-reload
 systemctl --user enable --now mpdscrobble
 systemctl --user status mpdscribble
 ```
 
-If you installed mpdscrobble from source you can also use:
-
+Otherwise you will need to manually install the systemd service.
 ```
-cp systemd-service/* ~/.config/systemd/user/
+curl https://raw.githubusercontent.com/dbeley/mpdscrobble/main/systemd-service/mpdscrobble.service > ~/.config/systemd/user/mpdscrobble.service
 systemctl --user daemon-reload
 systemctl --user enable --now mpdscrobble
 systemctl --user status mpdscribble

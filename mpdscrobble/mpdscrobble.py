@@ -130,7 +130,10 @@ class MPDScrobbleMPDConnection(MPDClient):
     def mpdscrobble_currentsong(self):
         currentsong = self.currentsong()
         status = self.status()
-        if all([x in currentsong for x in ["artist", "title", "duration"]]) and "elapsed" in status:
+        if (
+            all([x in currentsong for x in ["artist", "title", "duration"]])
+            and "elapsed" in status
+        ):
             return MPDScrobbleTrack(
                 artist=currentsong["artist"],
                 title=currentsong["title"],

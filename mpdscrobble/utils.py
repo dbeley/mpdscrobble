@@ -16,12 +16,13 @@ def read_config(config_file):
 def create_network(config):
     networks = []
     for i in config.sections():
-        networks.append(
-            MPDScrobbleLastFMNetwork(
-                config[i]["username"],
-                config[i]["password"],
-                config[i]["api_key"],
-                config[i]["api_secret"],
+        if i != "mpdscrobble":
+            networks.append(
+                MPDScrobbleLastFMNetwork(
+                    config[i]["username"],
+                    config[i]["password"],
+                    config[i]["api_key"],
+                    config[i]["api_secret"],
+                )
             )
-        )
     return MPDScrobbleNetwork(networks)

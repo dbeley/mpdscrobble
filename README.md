@@ -3,8 +3,8 @@
 A simple Last.fm scrobbler for MPD.
 
 On top of [Last.fm](https://www.last.fm/home), mpdscrobble is also compatible with those services:
+- [ListenBrainz](https://listenbrainz.org/)
 - [Maloja](https://github.com/krateng/maloja)
-- [ListenBrain](https://listenbrainz.org/)
 
 If you are searching for a mpd-compatible Last.fm scrobbler, check out first [mpdscribble](https://github.com/MusicPlayerDaemon/mpdscribble), as mpdscrobble has less features than mpdscribble:
 - no journal of failed scrobbles

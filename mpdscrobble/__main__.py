@@ -1,41 +1,36 @@
 """
-mpdscrobble: a simple Last.fm/Libre.fm scrobbler for MPD.
+mpdscrobble: a simple Last.fm scrobbler for MPD.
 """
 import logging
 import time
 import argparse
+from typing import Optional
+
+from mpdscrobble import constants
 from .utils import (
     read_config,
-    create_network,
+    create_networks,
 )
-from .mpdscrobble import MPDScrobbleMPDConnection
+from .mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleTrack, MPDScrobbleNetwork
+
+logger = logging.getLogger(__name__)
 
 
-logger = logging.getLogger()
-# scrobble will be sent if the track had at least a 40% completion
-SCROBBLE_PERCENTAGE = 40.0
-DEFAULT_HOST = "localhost"
-DEFAULT_PORT = 6600
-LOOP_DELAY = 10
-
-
-def loop(args, networks, client, cached_song):
+def loop(args: argparse.Namespace, networks: MPDScrobbleNetwork, client: MPDScrobbleMPDConnection, cached_song: Optional[MPDScrobbleTrack]) -> None:
     try:
         while True:
-            time.sleep(LOOP_DELAY)
+            time.sleep(constants.LOOP_DELAY)
             current_song = client.mpdscrobble_currentsong()
             if current_song and cached_song:
                 logger.debug(
                     f"Current: {current_song.debug()}\nCached: {cached_song.debug()}"
                 )
                 if cached_song != current_song:
-                    if cached_song.percentage > SCROBBLE_PERCENTAGE:
+                    if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
                         if not args.dry_run:
-                            logger.info(f"Scrobbling {cached_song}.")
                             networks.mpdscrobble_scrobble(cached_song)
                         else:
                             logger.warning("Dry-run mode enabled.")
-                    logger.debug(f"Updating now playing to {cached_song}.")
                     networks.mpdscrobble_update_now_playing(current_song)
             cached_song = client.mpdscrobble_currentsong()
     except Exception as e:
@@ -50,10 +45,10 @@ def main():
             "Empty config file.\nCreate a valid config file in ~/.config/mpdscrobble/mpdscrobble.conf or use the -c/--config-file flag."
         )
 
-    networks = create_network(config)
+    networks = create_networks(config)
 
-    host = DEFAULT_HOST
-    port = DEFAULT_PORT
+    host = constants.DEFAULT_HOST
+    port = constants.DEFAULT_PORT
     if "mpdscrobble" in config:
         if "host" in config["mpdscrobble"]:
             host = config["mpdscrobble"]["host"]
@@ -77,7 +72,7 @@ def main():
         cached_song = client.mpdscrobble_currentsong()
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     format = "%(levelname)s :: %(message)s"
     parser = argparse.ArgumentParser(description="A simple Last.fm scrobbler for MPD.")
     parser.add_argument(

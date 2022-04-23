@@ -9,7 +9,7 @@ setuptools.setup(
     version=mpdscrobble.__version__,
     author="dbeley",
     author_email="dbeley@protonmail.com",
-    description="A simple Last.fm/Libre.fm scrobbler for MPD.",
+    description="A simple Last.fm scrobbler for MPD.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/dbeley/mpdscrobble",

@@ -1,12 +1,16 @@
 # mpdscrobble
 
-A simple Last.fm scrobbler for MPD.
+A simple last.fm scrobbler for MPD.
+
+On top of [Last.fm](https://www.last.fm/home), mpdscrobble is also compatible with those services:
+- [Malola](https://github.com/krateng/maloja)
+- [ListenBrain](https://listenbrainz.org/)
 
 If you are searching for a mpd-compatible last.fm scrobbler, check out first [mpdscribble](https://github.com/MusicPlayerDaemon/mpdscribble), as mpdscrobble has less features than mpdscribble:
 - no journal of failed scrobbles
 - it needs a pair of Last.fm API key/secret instead of just username/password
 
-If you need to scrobble tracks from a mpdscribble journal file, you can use the [`mpdscribble_history.py`](https://github.com/dbeley/mpdscrobble/blob/main/mpdscribble_history.py) script.
+If you need to scrobble tracks from an existing mpdscribble journal file, you can use the [`mpdscribble_history.py`](https://github.com/dbeley/mpdscrobble/blob/main/mpdscribble_history.py) script.
 
 ## Requirements
 
@@ -21,9 +25,9 @@ Classic installation :
 pip install mpdscrobble
 mpdscrobble -h
 ```
-You will then need to create a config file (see *Configuration* section).
+You will then need to create a config file (see the [Configuration](#Configuration) section).
 
-If you want the systemd-service, you will have to install it manually (see *Scheduling* section).
+If you want the systemd-service, you will have to install it manually (see the [Scheduling](#Scheduling) section).
 
 ### Run from source
 
@@ -59,7 +63,7 @@ The systemd service file will be automatically installed.
 
 See [`mpdscrobble.example.conf`](https://github.com/dbeley/mpdscrobble/blob/main/mpdscrobble.example.conf) for an example.
 
-By default, `mpdscrobble` search a config file at `~/.config/mpdscrobble/mpdscrobble.conf`, but you can override the default location with the `-c/--config` flag (see *Usage* section).
+By default, `mpdscrobble` search a config file at `~/.config/mpdscrobble/mpdscrobble.conf`, but you can override the default location with the `-c/--config` flag (see the [Usage](#Usage) section).
 
 ## Scheduling
 

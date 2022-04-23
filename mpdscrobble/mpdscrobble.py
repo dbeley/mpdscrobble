@@ -1,11 +1,11 @@
 import time
 from typing import Optional, Union, Sequence
 
+import httpx
 import pylast
 import datetime
 import logging
 
-import requests
 from mpd import MPDClient
 
 from mpdscrobble import constants
@@ -77,7 +77,7 @@ class MPDScrobbleLastFMNetwork(pylast.LastFMNetwork):
         )
 
     def __str__(self) -> str:
-        return f"last.fm: user {self.username}."
+        return f"last.fm: user {self.username}"
 
     def mpdscrobble_scrobble(self, track: MPDScrobbleTrack) -> None:
         self.scrobble(
@@ -110,7 +110,7 @@ class MPDScrobbleMalojaNetwork:
         self.api_key = api_key
 
     def __str__(self) -> str:
-        return f"maloja: instance {self.url}."
+        return f"maloja: instance {self.url}"
 
     def mpdscrobble_scrobble(self, track: MPDScrobbleTrack) -> None:
         payload = {
@@ -122,7 +122,7 @@ class MPDScrobbleMalojaNetwork:
         }
         post_url = self.url + "/apis/mlj_1/newscrobble"
         logger.debug("Maloja: sending %s to %s", payload, post_url)
-        response = requests.post(post_url, data=payload)
+        response = httpx.post(post_url, data=payload)
         logger.debug("Maloja response: %s", response.content)
         response.raise_for_status()
 
@@ -142,7 +142,7 @@ class MPDScrobbleListenBrainzNetwork:
         self.api_key = api_key
 
     def __str__(self) -> str:
-        return f"listenbrainz: user {self.username}."
+        return f"listenbrainz: user {self.username}"
 
     def mpdscrobble_scrobble(self, track: MPDScrobbleTrack) -> None:
         """Taken from https://listenbrainz.readthedocs.io/en/production/dev/api-usage/"""
@@ -158,7 +158,7 @@ class MPDScrobbleListenBrainzNetwork:
         ]
         post_url = "https://{0}/1/submit-listens".format("api.listenbrainz.org")
         logger.debug("ListenBrainz: sending %s to %s", payload, post_url)
-        response = requests.post(
+        response = httpx.post(
             url=post_url,
             json={
                 "listen_type": "single",

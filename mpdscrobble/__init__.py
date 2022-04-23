@@ -5,6 +5,6 @@
 A simple Last.fm scrobbler for MPD.
 """
 
-__version__ = "0.3"
+__version__ = "0.3.1"
 
 name = "mpdscrobble"

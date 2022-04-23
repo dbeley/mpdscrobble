@@ -7,8 +7,7 @@ def test_track_percentage():
         artist="artist", title="title", album="album", duration=1.0, elapsed=1.0
     )
 
-    if not track.percentage == 100.0:
-        raise AssertionError()
+    assert track.percentage == 100.0
 
 
 def test_track_equality():
@@ -23,11 +22,9 @@ def test_track_equality():
         artist="artist", title="title", album="album", duration=2.0, elapsed=1.0
     )
 
-    if not track == track2:
-        raise AssertionError()
+    assert track == track2
 
-    if not track != track3:
-        raise AssertionError()
+    assert track != track3
 
 
 def test_track_str():
@@ -35,8 +32,7 @@ def test_track_str():
 
     str_track = "artist - title (album - date)"
 
-    if not str(track) == str_track:
-        raise AssertionError()
+    assert str(track) == str_track
 
 
 def test_track_debug():
@@ -53,8 +49,7 @@ def test_track_debug():
 
     str_track = "artist - 1 title (album - date) 1.0/2.0 (50.0%). Timestamp: 1000."
 
-    if not track.debug() == str_track:
-        raise AssertionError()
+    assert track.debug() == str_track
 
 
 def test_track_timestamp():
@@ -68,8 +63,4 @@ def test_track_timestamp():
         duration=2.0,
     )
 
-    print(track.timestamp)
-    print(time.time())
-
-    if not track.timestamp == int(time.time()):
-        raise AssertionError()
+    assert track.timestamp == int(time.time())

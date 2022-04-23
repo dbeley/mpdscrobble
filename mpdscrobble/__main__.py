@@ -16,7 +16,12 @@ from .mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleTrack, MPDScrobble
 logger = logging.getLogger(__name__)
 
 
-def loop(args: argparse.Namespace, networks: MPDScrobbleNetwork, client: MPDScrobbleMPDConnection, cached_song: Optional[MPDScrobbleTrack]) -> None:
+def loop(
+    args: argparse.Namespace,
+    networks: MPDScrobbleNetwork,
+    client: MPDScrobbleMPDConnection,
+    cached_song: Optional[MPDScrobbleTrack],
+) -> None:
     try:
         while True:
             time.sleep(constants.LOOP_DELAY)

@@ -20,5 +20,5 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "Operating System :: POSIX :: Linux",
     ],
-    install_requires=["python-mpd2", "pylast"],
+    install_requires=["httpx", "python-mpd2", "pylast"],
 )

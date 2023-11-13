@@ -37,6 +37,12 @@ def loop(
                         else:
                             logger.warning("Dry-run mode enabled.")
                     networks.mpdscrobble_update_now_playing(current_song)
+            if not current_song and cached_song:
+                if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
+                    if not args.dry_run:
+                        networks.mpdscrobble_scrobble(cached_song)
+                    else:
+                        logger.warning("Dry-run mode enabled")
             cached_song = client.mpdscrobble_currentsong()
     except Exception as e:
         logger.error(e)

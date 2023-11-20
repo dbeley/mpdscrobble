@@ -51,10 +51,10 @@ class MPDScrobbleTrack:
     def debug(self) -> str:
         return (
             f"{self.artist} - "
-            "{self.track} {self.title} "
-            "({self.album} - {self.date}) "
-            "{self.elapsed}/{self.duration} "
-            "({self.percentage}%). Timestamp: {self.timestamp}."
+            f"{self.track} {self.title} "
+            f"({self.album} - {self.date}) "
+            f"{self.elapsed}/{self.duration} "
+            f"({self.percentage}%). Timestamp: {self.timestamp}."
         )
 
     def __eq__(self, other) -> bool:

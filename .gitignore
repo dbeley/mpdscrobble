@@ -6,3 +6,4 @@ dist/
 mpdscrobble.conf
 .idea/
 .direnv/
+venv/

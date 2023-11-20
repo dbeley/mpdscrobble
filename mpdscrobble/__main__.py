@@ -10,6 +10,7 @@ from mpdscrobble import constants
 from .utils import (
     read_config,
     create_networks,
+    get_mpdscrobble_config
 )
 from .mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleTrack, MPDScrobbleNetwork
 
@@ -28,11 +29,12 @@ def loop(
             current_song = client.mpdscrobble_currentsong()
             if current_song and cached_song:
                 logger.debug(
-                    f"Current: {current_song.debug()}\nCached: {cached_song.debug()}"
+                    "Current: %s\nCached: %s", current_song.debug(), cached_song.debug()
                 )
                 if cached_song != current_song:
                     if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
                         if not args.dry_run:
+                            logger.info("Sending scrobble for %s.", current_song)
                             networks.mpdscrobble_scrobble(cached_song)
                         else:
                             logger.warning("Dry-run mode enabled.")
@@ -40,6 +42,7 @@ def loop(
             if not current_song and cached_song:
                 if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
                     if not args.dry_run:
+                        logger.info("Sending scrobble for %s. Detected stopped playback.", current_song)
                         networks.mpdscrobble_scrobble(cached_song)
                     else:
                         logger.warning("Dry-run mode enabled")
@@ -58,13 +61,7 @@ def main():
 
     networks = create_networks(config)
 
-    host = constants.DEFAULT_HOST
-    port = constants.DEFAULT_PORT
-    if "mpdscrobble" in config:
-        if "host" in config["mpdscrobble"]:
-            host = config["mpdscrobble"]["host"]
-        if "port" in config["mpdscrobble"]:
-            port = config["mpdscrobble"]["port"]
+    host, port = get_mpdscrobble_config(config)
 
     client = MPDScrobbleMPDConnection()
     client.mpdscrobble_connect(host, port)

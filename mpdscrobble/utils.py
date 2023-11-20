@@ -2,6 +2,7 @@ import logging
 import configparser
 import os
 
+from mpdscrobble import constants
 from .mpdscrobble import (
     MPDScrobbleLastFMNetwork,
     MPDScrobbleMalojaNetwork,
@@ -17,6 +18,17 @@ def read_config(config_file: str) -> configparser.ConfigParser:
     config = configparser.ConfigParser()
     config.read(os.path.expanduser(config_file))
     return config
+
+
+def get_mpdscrobble_config(config: configparser.ConfigParser) -> tuple[str, int]:
+    host = constants.DEFAULT_HOST
+    port = constants.DEFAULT_PORT
+    if "mpdscrobble" in config:
+        if "host" in config["mpdscrobble"]:
+            host = config["mpdscrobble"]["host"]
+        if "port" in config["mpdscrobble"]:
+            port = int(config["mpdscrobble"]["port"])
+    return host, port
 
 
 def create_networks(config: configparser.ConfigParser) -> MPDScrobbleNetwork:

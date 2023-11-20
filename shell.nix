@@ -1,13 +1,15 @@
 with import <nixpkgs> { };
 pkgs.mkShell {
   buildInputs = [
-    pkgs.python311
-    python311Packages.pip
+    python3
+    python3Packages.pip
+    pipenv
 
-    python311Packages.mpd2
-    python311Packages.pylast
-    python311Packages.httpx
-    python311Packages.twine
+    python3Packages.mpd2
+    python3Packages.pylast
+    python3Packages.httpx
+    python3Packages.twine
+    python3Packages.pytest
 
     pre-commit
   ];

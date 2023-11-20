@@ -5,3 +5,4 @@ build/
 dist/
 mpdscrobble.conf
 .idea/
+.direnv/

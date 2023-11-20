@@ -15,6 +15,9 @@ from .utils import (
 from .mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleTrack, MPDScrobbleNetwork
 
 logger = logging.getLogger(__name__)
+logging.getLogger("pylast").setLevel(logging.WARNING)
+logging.getLogger("mpd").setLevel(logging.WARNING)
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 def loop(
@@ -34,21 +37,22 @@ def loop(
                 if cached_song != current_song:
                     if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
                         if not args.dry_run:
-                            logger.info("Sending scrobble for %s.", current_song)
+                            logger.info("Sending scrobble for %s.", cached_song)
                             networks.mpdscrobble_scrobble(cached_song)
                         else:
-                            logger.warning("Dry-run mode enabled.")
+                            logger.warning("Dry-run mode enabled. Would have scrobbled %s.", cached_song)
                     networks.mpdscrobble_update_now_playing(current_song)
             if not current_song and cached_song:
                 if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
                     if not args.dry_run:
-                        logger.info("Sending scrobble for %s. Detected stopped playback.", current_song)
+                        logger.info("Sending scrobble for %s. Detected stopped playback.", cached_song)
                         networks.mpdscrobble_scrobble(cached_song)
                     else:
-                        logger.warning("Dry-run mode enabled")
+                        logger.warning("Dry-run mode enabled. Would have scrobbled %s.", cached_song)
             cached_song = client.mpdscrobble_currentsong()
     except Exception as e:
         logger.error(e)
+        raise
 
 
 def main():

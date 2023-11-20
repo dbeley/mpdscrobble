@@ -49,7 +49,13 @@ class MPDScrobbleTrack:
         return f"{self.artist} - {self.title} ({self.album} - {self.date})"
 
     def debug(self) -> str:
-        return f"{self.artist} - {self.track} {self.title} ({self.album} - {self.date}) {self.elapsed}/{self.duration} ({self.percentage}%). Timestamp: {self.timestamp}."
+        return (
+            f"{self.artist} - "
+            "{self.track} {self.title} "
+            "({self.album} - {self.date}) "
+            "{self.elapsed}/{self.duration} "
+            "({self.percentage}%). Timestamp: {self.timestamp}."
+        )
 
     def __eq__(self, other) -> bool:
         return (
@@ -105,7 +111,6 @@ class MPDScrobbleMalojaNetwork:
         api_key: str = "",
         url: str = "",
     ) -> None:
-
         self.url = url
         self.api_key = api_key
 
@@ -145,7 +150,7 @@ class MPDScrobbleListenBrainzNetwork:
         return f"listenbrainz: user {self.username}"
 
     def mpdscrobble_scrobble(self, track: MPDScrobbleTrack) -> None:
-        """Taken from https://listenbrainz.readthedocs.io/en/production/dev/api-usage/"""
+        """https://listenbrainz.readthedocs.io/en/production/dev/api-usage/"""
         payload = [
             {
                 "listened_at": track.timestamp,

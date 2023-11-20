@@ -7,11 +7,7 @@ import argparse
 from typing import Optional
 
 from mpdscrobble import constants
-from .utils import (
-    read_config,
-    create_networks,
-    get_mpdscrobble_config
-)
+from .utils import read_config, create_networks, get_mpdscrobble_config
 from .mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleTrack, MPDScrobbleNetwork
 
 logger = logging.getLogger(__name__)
@@ -40,15 +36,24 @@ def loop(
                             logger.info("Sending scrobble for %s.", cached_song)
                             networks.mpdscrobble_scrobble(cached_song)
                         else:
-                            logger.warning("Dry-run mode enabled. Would have scrobbled %s.", cached_song)
+                            logger.warning(
+                                "Dry-run mode enabled. Would have scrobbled %s.",
+                                cached_song,
+                            )
                     networks.mpdscrobble_update_now_playing(current_song)
             if not current_song and cached_song:
                 if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
                     if not args.dry_run:
-                        logger.info("Sending scrobble for %s. Detected stopped playback.", cached_song)
+                        logger.info(
+                            "Sending scrobble for %s. Detected stopped playback.",
+                            cached_song,
+                        )
                         networks.mpdscrobble_scrobble(cached_song)
                     else:
-                        logger.warning("Dry-run mode enabled. Would have scrobbled %s.", cached_song)
+                        logger.warning(
+                            "Dry-run mode enabled. Would have scrobbled %s.",
+                            cached_song,
+                        )
             cached_song = client.mpdscrobble_currentsong()
     except Exception as e:
         logger.error(e)
@@ -60,7 +65,9 @@ def main():
     config = read_config(args.config_file)
     if len(config.sections()) == 0:
         raise Exception(
-            "Empty config file.\nCreate a valid config file in ~/.config/mpdscrobble/mpdscrobble.conf or use the -c/--config-file flag."
+            "Empty config file.\n"
+            "Create a valid config file in ~/.config/mpdscrobble/mpdscrobble.conf"
+            "or use the -c/--config-file flag."
         )
 
     networks = create_networks(config)

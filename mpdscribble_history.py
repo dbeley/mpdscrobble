@@ -63,7 +63,7 @@ def main():
     client = MPDScrobbleMPDConnection()
     client.mpdscrobble_connect(host, port)
 
-    for index, i in enumerate(mpdscribble_journal):
+    for i in mpdscribble_journal:
         logger.info(i)
         networks.mpdscrobble_scrobble(i)
 

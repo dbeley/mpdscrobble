@@ -22,42 +22,38 @@ def loop(
     client: MPDScrobbleMPDConnection,
     cached_song: Optional[MPDScrobbleTrack],
 ) -> None:
-    try:
-        while True:
-            time.sleep(constants.LOOP_DELAY)
-            current_song = client.mpdscrobble_currentsong()
-            if current_song and cached_song:
-                logger.debug(
-                    "Current: %s\nCached: %s", current_song.debug(), cached_song.debug()
-                )
-                if cached_song != current_song:
-                    if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
-                        if not args.dry_run:
-                            logger.info("Sending scrobble for %s.", cached_song)
-                            networks.mpdscrobble_scrobble(cached_song)
-                        else:
-                            logger.warning(
-                                "Dry-run mode enabled. Would have scrobbled %s.",
-                                cached_song,
-                            )
-                    networks.mpdscrobble_update_now_playing(current_song)
-            if not current_song and cached_song:
+    while True:
+        time.sleep(constants.LOOP_DELAY)
+        current_song = client.mpdscrobble_currentsong()
+        if current_song and cached_song:
+            logger.debug(
+                "Current: %s\nCached: %s", current_song.debug(), cached_song.debug()
+            )
+            if cached_song != current_song:
                 if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
                     if not args.dry_run:
-                        logger.info(
-                            "Sending scrobble for %s. Detected stopped playback.",
-                            cached_song,
-                        )
+                        logger.info("Sending scrobble for %s.", cached_song)
                         networks.mpdscrobble_scrobble(cached_song)
                     else:
                         logger.warning(
                             "Dry-run mode enabled. Would have scrobbled %s.",
                             cached_song,
                         )
-            cached_song = client.mpdscrobble_currentsong()
-    except Exception as e:
-        logger.error(e)
-        raise
+                networks.mpdscrobble_update_now_playing(current_song)
+        if not current_song and cached_song:
+            if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
+                if not args.dry_run:
+                    logger.info(
+                        "Sending scrobble for %s. Detected stopped playback.",
+                        cached_song,
+                    )
+                    networks.mpdscrobble_scrobble(cached_song)
+                else:
+                    logger.warning(
+                        "Dry-run mode enabled. Would have scrobbled %s.",
+                        cached_song,
+                    )
+        cached_song = client.mpdscrobble_currentsong()
 
 
 def main():

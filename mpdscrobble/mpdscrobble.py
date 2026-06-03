@@ -3,7 +3,6 @@ from typing import Optional, Union, Sequence
 
 import httpx
 import pylast
-import datetime
 import logging
 
 from mpd import MPDClient
@@ -19,12 +18,12 @@ class MPDScrobbleTrack:
         self,
         artist: str,
         title: str,
-        album: str = None,
-        track: int = None,
-        date: str = None,
+        album: Optional[str] = None,
+        track: Optional[int] = None,
+        date: Optional[str] = None,
         duration: float = 1.0,
         elapsed: float = 0.0,
-        timestamp: int = None,
+        timestamp: Optional[int] = None,
         status: str = "",
     ) -> None:
         self.artist = artist
@@ -40,7 +39,7 @@ class MPDScrobbleTrack:
             else round(self.elapsed / self.duration * 100, 2)
         )
         self.timestamp = (
-            int(time.mktime(datetime.datetime.now().timetuple()))
+            int(time.time())
             if not timestamp
             else timestamp
         )

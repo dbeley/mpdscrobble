@@ -15,7 +15,7 @@ If you need to scrobble tracks from an existing mpdscribble journal file, you ca
 ## Requirements
 
 - httpx
-- mpd-python2
+- python-mpd2
 - pylast
 
 ## Installation

@@ -7,3 +7,9 @@ mpdscrobble.conf
 .idea/
 .direnv/
 venv/
+.venv/
+.pytest_cache/
+.coverage
+coverage.xml
+*.pyc
+*.pyo

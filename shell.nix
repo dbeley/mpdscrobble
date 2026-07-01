@@ -1,17 +1,18 @@
-with import <nixpkgs> { };
+{
+  pkgs ? import <nixpkgs> { },
+}:
+
 pkgs.mkShell {
-  buildInputs = [
+  buildInputs = with pkgs; [
     python3
-    python3Packages.pip
-    pipenv
-
-    python3Packages.mpd2
-    python3Packages.pylast
-    python3Packages.httpx
-    python3Packages.twine
-    python3Packages.pytest
-
     pre-commit
   ];
 
+  shellHook = ''
+    if [ ! -d .venv ]; then
+      python3 -m venv .venv
+    fi
+    source .venv/bin/activate
+    pip install -e . 2>/dev/null || true
+  '';
 }

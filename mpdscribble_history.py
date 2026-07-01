@@ -5,12 +5,9 @@ import logging
 import argparse
 from mpdscrobble.utils import (
     read_config,
-    create_network,
+    create_networks,
 )
-from mpdscrobble.mpdscrobble import (
-    MPDScrobbleMPDConnection,
-    MPDScrobbleTrack,
-)
+from mpdscrobble.mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleTrack
 
 
 logger = logging.getLogger()
@@ -50,7 +47,7 @@ def main():
     mpdscribble_journal = read_journal(args.journal_file)
     config = read_config(args.config_file)
 
-    networks = create_network(config)
+    networks = create_networks(config)
 
     host = DEFAULT_HOST
     port = DEFAULT_PORT

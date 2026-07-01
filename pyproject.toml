@@ -1,2 +1,40 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mpdscrobble"
+version = "0.3.3"
+description = "A simple Last.fm scrobbler for MPD."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "dbeley", email = "dbeley@protonmail.com"},
+]
+requires-python = ">=3.9"
+keywords = ["mpd", "last.fm", "scrobbler", "scrobble", "listenbrainz", "maloja"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: POSIX :: Linux",
+]
+
+dependencies = [
+    "httpx>=0.28.0",
+    "python-mpd2>=3.0.0",
+    "pylast>=5.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/dbeley/mpdscrobble"
+Repository = "https://github.com/dbeley/mpdscrobble"
+
+[project.scripts]
+mpdscrobble = "mpdscrobble.__main__:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

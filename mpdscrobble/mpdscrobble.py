@@ -202,16 +202,16 @@ class MPDScrobbleNetwork:
             try:
                 logger.debug("Update now playing with %s on %s", song, i)
                 i.mpdscrobble_update_now_playing(song)
-            except Exception as e:
-                logger.error(e)
+            except Exception:
+                logger.exception("Failed to update now playing on %s", i)
 
     def mpdscrobble_scrobble(self, song: MPDScrobbleTrack) -> None:
         for i in self.networks:
             try:
                 logger.debug("Scrobble %s on %s", song, i)
                 i.mpdscrobble_scrobble(song)
-            except Exception as e:
-                logger.error(e)
+            except Exception:
+                logger.exception("Failed to scrobble %s on %s", song, i)
 
 
 class MPDScrobbleMPDConnection(MPDClient):

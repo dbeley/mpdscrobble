@@ -1,6 +1,7 @@
 """
 mpdscrobble: a simple Last.fm scrobbler for MPD.
 """
+
 import logging
 import time
 import argparse
@@ -85,9 +86,7 @@ def main():
                 timeout,
             )
             time.sleep(timeout)
-            timeout = min(
-                timeout * 2, constants.MAX_RESTART_DELAY
-            )
+            timeout = min(timeout * 2, constants.MAX_RESTART_DELAY)
             client.mpdscrobble_restart()
         cached_song = client.mpdscrobble_currentsong()
 

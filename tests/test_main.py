@@ -30,9 +30,15 @@ def test_restart_backoff_doubles(monkeypatch):
             raise SystemExit
 
     monkeypatch.setattr(main_mod, "parse_args", lambda: args)
-    monkeypatch.setattr(main_mod, "read_config", lambda _: type("C", (), {"sections": lambda self: ["mpdscrobble"]})())
+    monkeypatch.setattr(
+        main_mod,
+        "read_config",
+        lambda _: type("C", (), {"sections": lambda self: ["mpdscrobble"]})(),
+    )
     monkeypatch.setattr(main_mod, "create_networks", lambda _: None)
-    monkeypatch.setattr(main_mod, "get_mpdscrobble_config", lambda _: ("host", 6600, False))
+    monkeypatch.setattr(
+        main_mod, "get_mpdscrobble_config", lambda _: ("host", 6600, False)
+    )
     monkeypatch.setattr(main_mod, "MPDScrobbleMPDConnection", FakeClient)
     monkeypatch.setattr(main_mod, "loop", fake_loop)
     monkeypatch.setattr(main_mod.time, "sleep", fake_sleep)

@@ -1,6 +1,7 @@
 """
 Simple script to scrobble a mpdscribble journal file.
 """
+
 import logging
 import argparse
 from mpdscrobble.utils import (
@@ -20,9 +21,7 @@ def read_journal(journal_file):
         tracklist = f.read().split("\n\n")
 
     tracks = [
-        [x.split(" = ", 1) for x in y.split("\n") if " = " in x]
-        for y in tracklist
-        if y
+        [x.split(" = ", 1) for x in y.split("\n") if " = " in x] for y in tracklist if y
     ]
     dict_tracks = [{k.strip(): v.strip() for k, v in x} for x in tracks]
     obj_tracks = [

@@ -32,9 +32,7 @@ def get_mpdscrobble_config(
         if "port" in config["mpdscrobble"]:
             port = int(config["mpdscrobble"]["port"])
         if "use_album_artist" in config["mpdscrobble"]:
-            use_album_artist = config["mpdscrobble"].getboolean(
-                "use_album_artist"
-            )
+            use_album_artist = config["mpdscrobble"].getboolean("use_album_artist")
     return host, port, use_album_artist
 
 

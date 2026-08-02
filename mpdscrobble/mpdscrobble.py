@@ -12,6 +12,7 @@ from mpdscrobble import constants
 
 logger = logging.getLogger(__name__)
 
+
 class MPDScrobbleTrack:
     """Class to represent a MPD Track."""
 
@@ -236,9 +237,8 @@ class MPDScrobbleMPDConnection(MPDClient):
     def mpdscrobble_currentsong(self) -> Optional[MPDScrobbleTrack]:
         currentsong = self.currentsong()
         status = self.status()
-        if (
-            all([x in currentsong for x in ["artist", "title", "duration"]])
-            and all([x in status for x in ["elapsed", "state"]])
+        if all([x in currentsong for x in ["artist", "title", "duration"]]) and all(
+            [x in status for x in ["elapsed", "state"]]
         ):
             artist = currentsong["artist"]
             if self.use_album_artist and "albumartist" in currentsong:

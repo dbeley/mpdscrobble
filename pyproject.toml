@@ -36,6 +36,14 @@ Repository = "https://github.com/dbeley/mpdscrobble"
 [tool.setuptools.dynamic]
 version = {attr = "mpdscrobble.__version__"}
 
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["B", "C", "E", "F", "I", "UP", "W"]
+ignore = ["E501"]
+
 [project.scripts]
 mpdscrobble = "mpdscrobble.__main__:main"
 

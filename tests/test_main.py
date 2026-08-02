@@ -43,3 +43,34 @@ def test_restart_backoff_doubles(monkeypatch):
         pass
 
     assert sleeps == [10, 20]
+
+
+def test_loop_fetches_song_once_per_iteration(monkeypatch):
+    args = argparse.Namespace(dry_run=True)
+    fetches = []
+    sleeps = []
+
+    class FakeClient:
+        def mpdscrobble_currentsong(self):
+            fetches.append(1)
+            return None
+
+    class FakeNetworks:
+        def mpdscrobble_scrobble(self, song):
+            pass
+
+        def mpdscrobble_update_now_playing(self, song):
+            pass
+
+    def stop(seconds):
+        sleeps.append(1)
+        if len(sleeps) >= 3:
+            raise SystemExit
+
+    monkeypatch.setattr(main_mod.time, "sleep", stop)
+    try:
+        main_mod.loop(args, FakeNetworks(), FakeClient(), None)
+    except SystemExit:
+        pass
+
+    assert len(fetches) == len(sleeps) - 1

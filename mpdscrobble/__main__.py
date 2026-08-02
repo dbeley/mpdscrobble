@@ -53,7 +53,7 @@ def loop(
                         "Dry-run mode enabled. Would have scrobbled %s.",
                         cached_song,
                     )
-        cached_song = client.mpdscrobble_currentsong()
+        cached_song = current_song
 
 
 def main():
@@ -89,7 +89,7 @@ def main():
                 timeout * 2, constants.MAX_RESTART_DELAY
             )
             client.mpdscrobble_restart()
-            cached_song = client.mpdscrobble_currentsong()
+        cached_song = client.mpdscrobble_currentsong()
 
 
 def parse_args() -> argparse.Namespace:

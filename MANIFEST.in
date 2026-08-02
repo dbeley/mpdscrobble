@@ -1,0 +1,3 @@
+include mpdscrobble.example.conf
+include mpdscribble_history.py
+recursive-include systemd-service *

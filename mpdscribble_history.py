@@ -8,12 +8,10 @@ from mpdscrobble.utils import (
     read_config,
     create_networks,
 )
-from mpdscrobble.mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleTrack
+from mpdscrobble.mpdscrobble import MPDScrobbleTrack
 
 
 logger = logging.getLogger()
-DEFAULT_HOST = "localhost"
-DEFAULT_PORT = 6600
 
 
 def read_journal(journal_file):
@@ -51,17 +49,6 @@ def main():
     config = read_config(args.config_file)
 
     networks = create_networks(config)
-
-    host = DEFAULT_HOST
-    port = DEFAULT_PORT
-    if "mpdscrobble" in config:
-        if "host" in config["mpdscrobble"]:
-            host = config["mpdscrobble"]["host"]
-        if "port" in config["mpdscrobble"]:
-            port = config["mpdscrobble"]["port"]
-
-    client = MPDScrobbleMPDConnection()
-    client.mpdscrobble_connect(host, port)
 
     for i in mpdscribble_journal:
         logger.info(i)

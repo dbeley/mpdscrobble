@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mpdscrobble"
-version = "0.3.3"
+version = "0.3.5"
 description = "A simple Last.fm scrobbler for MPD."
 readme = "README.md"
 license = {text = "MIT"}

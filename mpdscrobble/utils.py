@@ -20,15 +20,22 @@ def read_config(config_file: str) -> configparser.ConfigParser:
     return config
 
 
-def get_mpdscrobble_config(config: configparser.ConfigParser) -> tuple[str, int]:
+def get_mpdscrobble_config(
+    config: configparser.ConfigParser,
+) -> tuple[str, int, bool]:
     host = constants.DEFAULT_HOST
     port = constants.DEFAULT_PORT
+    use_album_artist = constants.DEFAULT_USE_ALBUM_ARTIST
     if "mpdscrobble" in config:
         if "host" in config["mpdscrobble"]:
             host = config["mpdscrobble"]["host"]
         if "port" in config["mpdscrobble"]:
             port = int(config["mpdscrobble"]["port"])
-    return host, port
+        if "use_album_artist" in config["mpdscrobble"]:
+            use_album_artist = config["mpdscrobble"].getboolean(
+                "use_album_artist"
+            )
+    return host, port, use_album_artist
 
 
 def create_networks(config: configparser.ConfigParser) -> MPDScrobbleNetwork:

@@ -68,9 +68,9 @@ def main():
 
     networks = create_networks(config)
 
-    host, port = get_mpdscrobble_config(config)
+    host, port, use_album_artist = get_mpdscrobble_config(config)
 
-    client = MPDScrobbleMPDConnection()
+    client = MPDScrobbleMPDConnection(use_album_artist=use_album_artist)
     client.mpdscrobble_connect(host, port)
 
     # Loop

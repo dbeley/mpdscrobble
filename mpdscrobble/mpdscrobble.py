@@ -214,8 +214,9 @@ class MPDScrobbleNetwork:
 class MPDScrobbleMPDConnection(MPDClient):
     """Class to interact with MPD."""
 
-    def __init__(self) -> None:
+    def __init__(self, use_album_artist: bool = False) -> None:
         MPDClient.__init__(self)
+        self.use_album_artist = use_album_artist
 
     def mpdscrobble_connect(
         self, host: str = constants.DEFAULT_HOST, port: int = constants.DEFAULT_PORT
@@ -234,8 +235,11 @@ class MPDScrobbleMPDConnection(MPDClient):
             all([x in currentsong for x in ["artist", "title", "duration"]])
             and all([x in status for x in ["elapsed", "state"]])
         ):
+            artist = currentsong["artist"]
+            if self.use_album_artist and "albumartist" in currentsong:
+                artist = currentsong["albumartist"]
             return MPDScrobbleTrack(
-                artist=currentsong["artist"],
+                artist=artist,
                 title=currentsong["title"],
                 track=currentsong["track"][0] if "track" in currentsong else None,
                 album=currentsong["album"] if "album" in currentsong else None,

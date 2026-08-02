@@ -2,14 +2,15 @@
 mpdscrobble: a simple Last.fm scrobbler for MPD.
 """
 
+import argparse
 import logging
 import time
-import argparse
 from typing import Optional
 
 from mpdscrobble import constants
-from .utils import read_config, create_networks, get_mpdscrobble_config
-from .mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleTrack, MPDScrobbleNetwork
+
+from .mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleNetwork, MPDScrobbleTrack
+from .utils import create_networks, get_mpdscrobble_config, read_config
 
 logger = logging.getLogger(__name__)
 logging.getLogger("pylast").setLevel(logging.WARNING)

@@ -1,4 +1,5 @@
 import time
+
 from mpdscrobble.mpdscrobble import MPDScrobbleTrack
 
 

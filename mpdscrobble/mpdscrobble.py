@@ -1,10 +1,10 @@
+import logging
 import time
-from typing import Optional, Union, Sequence
+from collections.abc import Sequence
+from typing import Optional, Union
 
 import httpx
 import pylast
-import logging
-
 from mpd import MPDClient
 
 from mpdscrobble import constants
@@ -160,7 +160,7 @@ class MPDScrobbleListenBrainzNetwork:
                 },
             }
         ]
-        post_url = "https://{0}/1/submit-listens".format("api.listenbrainz.org")
+        post_url = "https://api.listenbrainz.org/1/submit-listens"
         logger.debug("ListenBrainz: sending %s to %s", payload, post_url)
         response = httpx.post(
             url=post_url,
@@ -168,7 +168,7 @@ class MPDScrobbleListenBrainzNetwork:
                 "listen_type": "single",
                 "payload": payload,
             },
-            headers={"Authorization": "Token {0}".format(self.api_key)},
+            headers={"Authorization": f"Token {self.api_key}"},
         )
         logger.debug("ListenBrainz response: %s", response.content)
         response.raise_for_status()
@@ -234,8 +234,8 @@ class MPDScrobbleMPDConnection(MPDClient):
     def mpdscrobble_currentsong(self) -> Optional[MPDScrobbleTrack]:
         currentsong = self.currentsong()
         status = self.status()
-        if all([x in currentsong for x in ["artist", "title", "duration"]]) and all(
-            [x in status for x in ["elapsed", "state"]]
+        if all(x in currentsong for x in ["artist", "title", "duration"]) and all(
+            x in status for x in ["elapsed", "state"]
         ):
             artist = currentsong["artist"]
             if self.use_album_artist and "albumartist" in currentsong:

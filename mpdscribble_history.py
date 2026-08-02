@@ -2,20 +2,20 @@
 Simple script to scrobble a mpdscribble journal file.
 """
 
-import logging
 import argparse
-from mpdscrobble.utils import (
-    read_config,
-    create_networks,
-)
-from mpdscrobble.mpdscrobble import MPDScrobbleTrack
+import logging
 
+from mpdscrobble.mpdscrobble import MPDScrobbleTrack
+from mpdscrobble.utils import (
+    create_networks,
+    read_config,
+)
 
 logger = logging.getLogger()
 
 
 def read_journal(journal_file):
-    with open(journal_file, "r") as f:
+    with open(journal_file) as f:
         tracklist = f.read().split("\n\n")
 
     tracks = [

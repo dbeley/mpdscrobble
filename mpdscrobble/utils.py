@@ -1,15 +1,15 @@
-import logging
 import configparser
+import logging
 import os
 
 from mpdscrobble import constants
+
 from .mpdscrobble import (
     MPDScrobbleLastFMNetwork,
+    MPDScrobbleListenBrainzNetwork,
     MPDScrobbleMalojaNetwork,
     MPDScrobbleNetwork,
-    MPDScrobbleListenBrainzNetwork,
 )
-
 
 logger = logging.getLogger(__name__)
 

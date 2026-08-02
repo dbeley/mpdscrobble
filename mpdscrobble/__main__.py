@@ -75,16 +75,21 @@ def main():
 
     # Loop
     cached_song = client.mpdscrobble_currentsong()
+    timeout = constants.DEFAULT_RESTART_DELAY
     while True:
-        timeout = 10
-        loop(args, networks, client, cached_song)
-        logger.error(
-            f"MPD Client crashed. Waiting {timeout} seconds before restarting."
-        )
-        time.sleep(timeout)
-        timeout = timeout * 2
-        client.mpdscrobble_restart()
-        cached_song = client.mpdscrobble_currentsong()
+        try:
+            loop(args, networks, client, cached_song)
+        except Exception:
+            logger.exception(
+                "MPD Client crashed. Waiting %s seconds before restarting.",
+                timeout,
+            )
+            time.sleep(timeout)
+            timeout = min(
+                timeout * 2, constants.MAX_RESTART_DELAY
+            )
+            client.mpdscrobble_restart()
+            cached_song = client.mpdscrobble_currentsong()
 
 
 def parse_args() -> argparse.Namespace:

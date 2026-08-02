@@ -7,6 +7,7 @@ def current_song():
         "albumartist": "album artist",
         "title": "title",
         "duration": "10",
+        "track": "10",
     }
 
 
@@ -32,3 +33,13 @@ def test_uses_album_artist_when_enabled(monkeypatch):
     track = client.mpdscrobble_currentsong()
 
     assert track.artist == "album artist"
+
+
+def test_keeps_full_multi_digit_track_number(monkeypatch):
+    client = MPDScrobbleMPDConnection()
+    monkeypatch.setattr(client, "currentsong", current_song)
+    monkeypatch.setattr(client, "status", status)
+
+    track = client.mpdscrobble_currentsong()
+
+    assert track.track == "10"

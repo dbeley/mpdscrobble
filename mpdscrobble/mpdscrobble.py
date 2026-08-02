@@ -241,7 +241,7 @@ class MPDScrobbleMPDConnection(MPDClient):
             return MPDScrobbleTrack(
                 artist=artist,
                 title=currentsong["title"],
-                track=currentsong["track"][0] if "track" in currentsong else None,
+                track=currentsong.get("track"),
                 album=currentsong["album"] if "album" in currentsong else None,
                 date=currentsong["date"] if "date" in currentsong else None,
                 duration=currentsong["duration"],

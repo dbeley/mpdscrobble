@@ -30,7 +30,7 @@ def loop(
                 "Current: %s\nCached: %s", current_song.debug(), cached_song.debug()
             )
             if cached_song != current_song:
-                if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
+                if cached_song.percentage >= constants.SCROBBLE_PERCENTAGE:
                     if not args.dry_run:
                         logger.info("Sending scrobble for %s.", cached_song)
                         networks.mpdscrobble_scrobble(cached_song)
@@ -41,7 +41,7 @@ def loop(
                         )
                 networks.mpdscrobble_update_now_playing(current_song)
         if not current_song and cached_song:
-            if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
+            if cached_song.percentage >= constants.SCROBBLE_PERCENTAGE:
                 if not args.dry_run:
                     logger.info(
                         "Sending scrobble for %s. Detected stopped playback.",

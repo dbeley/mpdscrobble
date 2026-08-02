@@ -74,3 +74,37 @@ def test_loop_fetches_song_once_per_iteration(monkeypatch):
         pass
 
     assert len(fetches) == len(sleeps) - 1
+
+
+def test_scrobbles_track_at_exactly_40_percent(monkeypatch):
+    from mpdscrobble.mpdscrobble import MPDScrobbleTrack
+
+    args = argparse.Namespace(dry_run=False)
+    scrobbled = []
+
+    class FakeClient:
+        def mpdscrobble_currentsong(self):
+            return None
+
+    class FakeNetworks:
+        def mpdscrobble_scrobble(self, song):
+            scrobbled.append(song)
+
+        def mpdscrobble_update_now_playing(self, song):
+            pass
+
+    stop_called = []
+
+    def stop(seconds):
+        if stop_called:
+            raise SystemExit
+        stop_called.append(1)
+
+    track = MPDScrobbleTrack(artist="a", title="t", duration=1.0, elapsed=0.4)
+    monkeypatch.setattr(main_mod.time, "sleep", stop)
+    try:
+        main_mod.loop(args, FakeNetworks(), FakeClient(), track)
+    except SystemExit:
+        pass
+
+    assert scrobbled == [track]

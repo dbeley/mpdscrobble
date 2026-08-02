@@ -35,6 +35,24 @@ def test_uses_album_artist_when_enabled(monkeypatch):
     assert track.artist == "album artist"
 
 
+def test_restart_reconnects_with_configured_host_port(monkeypatch):
+    client = MPDScrobbleMPDConnection()
+    connect_calls = []
+    monkeypatch.setattr(
+        client, "connect", lambda host, port=None: connect_calls.append((host, port))
+    )
+    monkeypatch.setattr(client, "close", lambda: None)
+    monkeypatch.setattr(client, "disconnect", lambda: None)
+
+    client.mpdscrobble_connect("mpd.example.org", 1234)
+    client.mpdscrobble_restart()
+
+    assert connect_calls == [
+        ("mpd.example.org", 1234),
+        ("mpd.example.org", 1234),
+    ]
+
+
 def test_keeps_full_multi_digit_track_number(monkeypatch):
     client = MPDScrobbleMPDConnection()
     monkeypatch.setattr(client, "currentsong", current_song)

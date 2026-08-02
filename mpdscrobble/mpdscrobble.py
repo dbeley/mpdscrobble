@@ -221,12 +221,14 @@ class MPDScrobbleMPDConnection(MPDClient):
     def mpdscrobble_connect(
         self, host: str = constants.DEFAULT_HOST, port: int = constants.DEFAULT_PORT
     ) -> None:
+        self.host = host
+        self.port = port
         self.connect(host, port)
 
     def mpdscrobble_restart(self) -> None:
         self.close()
         self.disconnect()
-        self.mpdscrobble_connect()
+        self.mpdscrobble_connect(self.host, self.port)
 
     def mpdscrobble_currentsong(self) -> Optional[MPDScrobbleTrack]:
         currentsong = self.currentsong()

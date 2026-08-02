@@ -3,7 +3,6 @@ from typing import Optional, Union, Sequence
 
 import httpx
 import pylast
-import datetime
 import logging
 
 from mpd import MPDClient
@@ -40,11 +39,7 @@ class MPDScrobbleTrack:
             if not duration or not elapsed
             else round(self.elapsed / self.duration * 100, 2)
         )
-        self.timestamp = (
-            int(time.mktime(datetime.datetime.now().timetuple()))
-            if not timestamp
-            else timestamp
-        )
+        self.timestamp = int(time.time()) if not timestamp else timestamp
         self.status = status
 
     def __str__(self) -> str:

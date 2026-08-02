@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mpdscrobble"
-version = "0.3.5"
 description = "A simple Last.fm scrobbler for MPD."
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
     {name = "dbeley", email = "dbeley@protonmail.com"},
 ]
+dynamic = ["version"]
 requires-python = ">=3.9"
 keywords = ["mpd", "last.fm", "scrobbler", "scrobble", "listenbrainz", "maloja"]
 classifiers = [
@@ -32,6 +32,9 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/dbeley/mpdscrobble"
 Repository = "https://github.com/dbeley/mpdscrobble"
+
+[tool.setuptools.dynamic]
+version = {attr = "mpdscrobble.__version__"}
 
 [project.scripts]
 mpdscrobble = "mpdscrobble.__main__:main"

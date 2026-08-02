@@ -60,6 +60,8 @@ class MPDScrobbleTrack:
         )
 
     def __eq__(self, other) -> bool:
+        if not isinstance(other, MPDScrobbleTrack):
+            return NotImplemented
         return (
             self.artist == other.artist
             and self.title == other.title

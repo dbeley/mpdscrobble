@@ -19,8 +19,12 @@ def read_journal(journal_file):
     with open(journal_file, "r") as f:
         tracklist = f.read().split("\n\n")
 
-    tracks = [[x.split(" = ") for x in y.split("\n") if x] for y in tracklist if y]
-    dict_tracks = [{k: v for k, v in x} for x in tracks]
+    tracks = [
+        [x.split(" = ", 1) for x in y.split("\n") if " = " in x]
+        for y in tracklist
+        if y
+    ]
+    dict_tracks = [{k.strip(): v.strip() for k, v in x} for x in tracks]
     obj_tracks = [
         {
             "artist": x["a"],

@@ -53,6 +53,25 @@ def test_restart_reconnects_with_configured_host_port(monkeypatch):
     ]
 
 
+def test_restart_survives_dead_close(monkeypatch):
+    client = MPDScrobbleMPDConnection()
+    connect_calls = []
+
+    def bad_close():
+        raise ConnectionError("socket closed")
+
+    monkeypatch.setattr(client, "close", bad_close)
+    monkeypatch.setattr(client, "disconnect", lambda: None)
+    monkeypatch.setattr(
+        client, "connect", lambda host, port=None: connect_calls.append((host, port))
+    )
+
+    client.mpdscrobble_connect("host", 6600)
+    client.mpdscrobble_restart()
+
+    assert connect_calls == [("host", 6600), ("host", 6600)]
+
+
 def test_keeps_full_multi_digit_track_number(monkeypatch):
     client = MPDScrobbleMPDConnection()
     monkeypatch.setattr(client, "currentsong", current_song)

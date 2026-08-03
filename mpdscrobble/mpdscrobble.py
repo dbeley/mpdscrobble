@@ -1,16 +1,16 @@
+import logging
 import time
-from typing import Optional, Union, Sequence
+from collections.abc import Sequence
+from typing import Optional, Union
 
 import httpx
 import pylast
-import datetime
-import logging
-
 from mpd import MPDClient
 
 from mpdscrobble import constants
 
 logger = logging.getLogger(__name__)
+
 
 class MPDScrobbleTrack:
     """Class to represent a MPD Track."""
@@ -39,11 +39,7 @@ class MPDScrobbleTrack:
             if not duration or not elapsed
             else round(self.elapsed / self.duration * 100, 2)
         )
-        self.timestamp = (
-            int(time.mktime(datetime.datetime.now().timetuple()))
-            if not timestamp
-            else timestamp
-        )
+        self.timestamp = int(time.time()) if not timestamp else timestamp
         self.status = status
 
     def __str__(self) -> str:
@@ -59,6 +55,8 @@ class MPDScrobbleTrack:
         )
 
     def __eq__(self, other) -> bool:
+        if not isinstance(other, MPDScrobbleTrack):
+            return NotImplemented
         return (
             self.artist == other.artist
             and self.title == other.title
@@ -162,7 +160,7 @@ class MPDScrobbleListenBrainzNetwork:
                 },
             }
         ]
-        post_url = "https://{0}/1/submit-listens".format("api.listenbrainz.org")
+        post_url = "https://api.listenbrainz.org/1/submit-listens"
         logger.debug("ListenBrainz: sending %s to %s", payload, post_url)
         response = httpx.post(
             url=post_url,
@@ -170,7 +168,7 @@ class MPDScrobbleListenBrainzNetwork:
                 "listen_type": "single",
                 "payload": payload,
             },
-            headers={"Authorization": "Token {0}".format(self.api_key)},
+            headers={"Authorization": f"Token {self.api_key}"},
         )
         logger.debug("ListenBrainz response: %s", response.content)
         response.raise_for_status()
@@ -199,16 +197,16 @@ class MPDScrobbleNetwork:
             try:
                 logger.debug("Update now playing with %s on %s", song, i)
                 i.mpdscrobble_update_now_playing(song)
-            except Exception as e:
-                logger.error(e)
+            except Exception:
+                logger.exception("Failed to update now playing on %s", i)
 
     def mpdscrobble_scrobble(self, song: MPDScrobbleTrack) -> None:
         for i in self.networks:
             try:
                 logger.debug("Scrobble %s on %s", song, i)
                 i.mpdscrobble_scrobble(song)
-            except Exception as e:
-                logger.error(e)
+            except Exception:
+                logger.exception("Failed to scrobble %s on %s", song, i)
 
 
 class MPDScrobbleMPDConnection(MPDClient):
@@ -221,19 +219,23 @@ class MPDScrobbleMPDConnection(MPDClient):
     def mpdscrobble_connect(
         self, host: str = constants.DEFAULT_HOST, port: int = constants.DEFAULT_PORT
     ) -> None:
+        self.host = host
+        self.port = port
         self.connect(host, port)
 
     def mpdscrobble_restart(self) -> None:
-        self.close()
+        try:
+            self.close()
+        except Exception:
+            pass
         self.disconnect()
-        self.mpdscrobble_connect()
+        self.mpdscrobble_connect(self.host, self.port)
 
     def mpdscrobble_currentsong(self) -> Optional[MPDScrobbleTrack]:
         currentsong = self.currentsong()
         status = self.status()
-        if (
-            all([x in currentsong for x in ["artist", "title", "duration"]])
-            and all([x in status for x in ["elapsed", "state"]])
+        if all(x in currentsong for x in ["artist", "title", "duration"]) and all(
+            x in status for x in ["elapsed", "state"]
         ):
             artist = currentsong["artist"]
             if self.use_album_artist and "albumartist" in currentsong:
@@ -241,7 +243,7 @@ class MPDScrobbleMPDConnection(MPDClient):
             return MPDScrobbleTrack(
                 artist=artist,
                 title=currentsong["title"],
-                track=currentsong["track"][0] if "track" in currentsong else None,
+                track=currentsong.get("track"),
                 album=currentsong["album"] if "album" in currentsong else None,
                 date=currentsong["date"] if "date" in currentsong else None,
                 duration=currentsong["duration"],

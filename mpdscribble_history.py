@@ -1,26 +1,27 @@
 """
 Simple script to scrobble a mpdscribble journal file.
 """
-import logging
-import argparse
-from mpdscrobble.utils import (
-    read_config,
-    create_networks,
-)
-from mpdscrobble.mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleTrack
 
+import argparse
+import logging
+
+from mpdscrobble.mpdscrobble import MPDScrobbleTrack
+from mpdscrobble.utils import (
+    create_networks,
+    read_config,
+)
 
 logger = logging.getLogger()
-DEFAULT_HOST = "localhost"
-DEFAULT_PORT = 6600
 
 
 def read_journal(journal_file):
-    with open(journal_file, "r") as f:
+    with open(journal_file) as f:
         tracklist = f.read().split("\n\n")
 
-    tracks = [[x.split(" = ") for x in y.split("\n") if x] for y in tracklist if y]
-    dict_tracks = [{k: v for k, v in x} for x in tracks]
+    tracks = [
+        [x.split(" = ", 1) for x in y.split("\n") if " = " in x] for y in tracklist if y
+    ]
+    dict_tracks = [{k.strip(): v.strip() for k, v in x} for x in tracks]
     obj_tracks = [
         {
             "artist": x["a"],
@@ -48,17 +49,6 @@ def main():
     config = read_config(args.config_file)
 
     networks = create_networks(config)
-
-    host = DEFAULT_HOST
-    port = DEFAULT_PORT
-    if "mpdscrobble" in config:
-        if "host" in config["mpdscrobble"]:
-            host = config["mpdscrobble"]["host"]
-        if "port" in config["mpdscrobble"]:
-            port = config["mpdscrobble"]["port"]
-
-    client = MPDScrobbleMPDConnection()
-    client.mpdscrobble_connect(host, port)
 
     for i in mpdscribble_journal:
         logger.info(i)

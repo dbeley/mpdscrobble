@@ -1,4 +1,5 @@
 import time
+
 from mpdscrobble.mpdscrobble import MPDScrobbleTrack
 
 
@@ -25,6 +26,12 @@ def test_track_equality():
     assert track == track2
 
     assert track != track3
+
+
+def test_track_equality_with_non_track():
+    track = MPDScrobbleTrack(artist="artist", title="title")
+
+    assert track != "not a track"
 
 
 def test_track_str():

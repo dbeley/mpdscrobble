@@ -15,7 +15,7 @@ If you need to scrobble tracks from an existing mpdscribble journal file, you ca
 ## Requirements
 
 - httpx
-- mpd-python2
+- python-mpd2
 - pylast
 
 ## Installation
@@ -32,22 +32,17 @@ If you want the systemd-service, you will have to install it manually (see the [
 
 ### Run from source
 
-#### First method
-
 ```
 git clone https://github.com/dbeley/mpdscrobble
 cd mpdscrobble
-python setup.py install --user
+pip install -e .
 mpdscrobble -h
 ```
 
-#### Second method (with pipenv)
+If you want to scrobble an existing mpdscribble journal file, use the `mpdscribble_history.py` script:
 
 ```
-git clone https://github.com/dbeley/mpdscrobble
-cd mpdscrobble
-pipenv install '-e .'
-pipenv run mpdscrobble -h
+python mpdscribble_history.py /path/to/mpdscribble/journal -c ~/.config/mpdscrobble/mpdscrobble.conf
 ```
 
 ### On Archlinux
@@ -64,7 +59,21 @@ The systemd service file will be automatically installed.
 
 See [`mpdscrobble.example.conf`](https://github.com/dbeley/mpdscrobble/blob/main/mpdscrobble.example.conf) for an example.
 
-By default, `mpdscrobble` search a config file at `~/.config/mpdscrobble/mpdscrobble.conf`, but you can override the default location with the `-c/--config` flag (see the [Usage](#Usage) section).
+By default, `mpdscrobble` searches for a config file at `~/.config/mpdscrobble/mpdscrobble.conf`, but you can override the default location with the `-c/--config_file` flag (see the [Usage](#Usage) section).
+
+The `mpdscrobble` section lets you override the MPD connection settings and the scrobble behavior:
+
+```
+[mpdscrobble]
+host = localhost
+port = 6600
+use_album_artist = false
+```
+
+- `host` and `port`: MPD connection settings, optional, default to `localhost:6600`.
+- `use_album_artist`: when enabled, scrobble with the album artist instead of the track artist when the track has one, optional, default is `false`.
+
+Each scrobbler service gets its own section: `[last.fm]`, `[listenbrainz]`, `[maloja]`, and you can configure several instances of the same service by appending a number to the section name (`[maloja2]`, `[maloja3]`, ...).
 
 ## Scheduling
 

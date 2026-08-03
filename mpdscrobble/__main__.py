@@ -1,14 +1,16 @@
 """
 mpdscrobble: a simple Last.fm scrobbler for MPD.
 """
+
+import argparse
 import logging
 import time
-import argparse
 from typing import Optional
 
 from mpdscrobble import constants
-from .utils import read_config, create_networks, get_mpdscrobble_config
-from .mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleTrack, MPDScrobbleNetwork
+
+from .mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleNetwork, MPDScrobbleTrack
+from .utils import create_networks, get_mpdscrobble_config, read_config
 
 logger = logging.getLogger(__name__)
 logging.getLogger("pylast").setLevel(logging.WARNING)
@@ -30,7 +32,7 @@ def loop(
                 "Current: %s\nCached: %s", current_song.debug(), cached_song.debug()
             )
             if cached_song != current_song:
-                if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
+                if cached_song.percentage >= constants.SCROBBLE_PERCENTAGE:
                     if not args.dry_run:
                         logger.info("Sending scrobble for %s.", cached_song)
                         networks.mpdscrobble_scrobble(cached_song)
@@ -41,7 +43,7 @@ def loop(
                         )
                 networks.mpdscrobble_update_now_playing(current_song)
         if not current_song and cached_song:
-            if cached_song.percentage > constants.SCROBBLE_PERCENTAGE:
+            if cached_song.percentage >= constants.SCROBBLE_PERCENTAGE:
                 if not args.dry_run:
                     logger.info(
                         "Sending scrobble for %s. Detected stopped playback.",
@@ -53,7 +55,7 @@ def loop(
                         "Dry-run mode enabled. Would have scrobbled %s.",
                         cached_song,
                     )
-        cached_song = client.mpdscrobble_currentsong()
+        cached_song = current_song
 
 
 def main():
@@ -75,15 +77,18 @@ def main():
 
     # Loop
     cached_song = client.mpdscrobble_currentsong()
+    timeout = constants.DEFAULT_RESTART_DELAY
     while True:
-        timeout = 10
-        loop(args, networks, client, cached_song)
-        logger.error(
-            f"MPD Client crashed. Waiting {timeout} seconds before restarting."
-        )
-        time.sleep(timeout)
-        timeout = timeout * 2
-        client.mpdscrobble_restart()
+        try:
+            loop(args, networks, client, cached_song)
+        except Exception:
+            logger.exception(
+                "MPD Client crashed. Waiting %s seconds before restarting.",
+                timeout,
+            )
+            time.sleep(timeout)
+            timeout = min(timeout * 2, constants.MAX_RESTART_DELAY)
+            client.mpdscrobble_restart()
         cached_song = client.mpdscrobble_currentsong()
 
 

@@ -1,3 +1,5 @@
 include mpdscrobble.example.conf
 include mpdscribble_history.py
 recursive-include systemd-service *
+graft tests
+global-exclude __pycache__ *.py[cod]

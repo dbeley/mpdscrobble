@@ -114,3 +114,52 @@ def test_scrobbles_track_at_exactly_40_percent(monkeypatch):
         pass
 
     assert scrobbled == [track]
+
+
+def test_retries_when_the_mpd_connection_fails(monkeypatch):
+    args = argparse.Namespace(config_file="nope", dry_run=True)
+    sleeps = []
+    connects = []
+
+    class FakeClient:
+        def __init__(self, use_album_artist=False):
+            pass
+
+        def mpdscrobble_connect(self, host, port):
+            connects.append(1)
+            if len(connects) == 1:
+                raise ConnectionError("MPD is not up yet")
+
+        def mpdscrobble_currentsong(self):
+            return None
+
+        def mpdscrobble_restart(self):
+            pass
+
+    def fake_loop(*_):
+        raise SystemExit
+
+    def fake_sleep(seconds):
+        sleeps.append(seconds)
+
+    monkeypatch.setattr(main_mod, "parse_args", lambda: args)
+    monkeypatch.setattr(
+        main_mod,
+        "read_config",
+        lambda _: type("C", (), {"sections": lambda self: ["mpdscrobble"]})(),
+    )
+    monkeypatch.setattr(main_mod, "create_networks", lambda _: None)
+    monkeypatch.setattr(
+        main_mod, "get_mpdscrobble_config", lambda _: ("host", 6600, False)
+    )
+    monkeypatch.setattr(main_mod, "MPDScrobbleMPDConnection", FakeClient)
+    monkeypatch.setattr(main_mod, "loop", fake_loop)
+    monkeypatch.setattr(main_mod.time, "sleep", fake_sleep)
+
+    try:
+        main_mod.main()
+    except SystemExit:
+        pass
+
+    assert len(connects) == 2
+    assert sleeps == [10]

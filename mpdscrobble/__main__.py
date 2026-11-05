@@ -68,28 +68,31 @@ def main():
             "or use the -c/--config-file flag."
         )
 
-    networks = create_networks(config)
-
     host, port, use_album_artist = get_mpdscrobble_config(config)
 
     client = MPDScrobbleMPDConnection(use_album_artist=use_album_artist)
-    client.mpdscrobble_connect(host, port)
 
-    # Loop
-    cached_song = client.mpdscrobble_currentsong()
+    # Connection and network setup are retried as well: MPD or the scrobbling
+    # services can be temporarily unreachable, which should not kill the daemon.
+    connected = False
     timeout = constants.DEFAULT_RESTART_DELAY
     while True:
         try:
+            if connected:
+                client.mpdscrobble_restart()
+            else:
+                client.mpdscrobble_connect(host, port)
+                connected = True
+            networks = create_networks(config)
+            cached_song = client.mpdscrobble_currentsong()
             loop(args, networks, client, cached_song)
         except Exception:
             logger.exception(
-                "MPD Client crashed. Waiting %s seconds before restarting.",
+                "mpdscrobble crashed. Waiting %s seconds before restarting.",
                 timeout,
             )
             time.sleep(timeout)
             timeout = min(timeout * 2, constants.MAX_RESTART_DELAY)
-            client.mpdscrobble_restart()
-        cached_song = client.mpdscrobble_currentsong()
 
 
 def parse_args() -> argparse.Namespace:

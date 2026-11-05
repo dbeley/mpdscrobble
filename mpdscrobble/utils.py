@@ -55,6 +55,7 @@ def create_networks(config: configparser.ConfigParser) -> MPDScrobbleNetwork:
                     password=config[i].get("password"),
                     api_key=config[i].get("api_key"),
                     api_secret=config[i].get("api_secret"),
+                    session_key=config[i].get("session_key"),
                 )  # type: ignore
             networks.append(network)
     return MPDScrobbleNetwork(networks)

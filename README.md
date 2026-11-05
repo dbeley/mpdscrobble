@@ -75,6 +75,8 @@ use_album_artist = false
 
 Each scrobbler service gets its own section: `[last.fm]`, `[listenbrainz]`, `[maloja]`, and you can configure several instances of the same service by appending a number to the section name (`[maloja2]`, `[maloja3]`, ...).
 
+For Last.fm, `api_key` and `api_secret` identify the application, not the user: scrobbling also requires a user credential, either `username` + `password`, or a pre-obtained `session_key` (which avoids storing your password in the config file).
+
 ## Scheduling
 
 If you installed the AUR package on Archlinux, the systemd service is automatically installed.

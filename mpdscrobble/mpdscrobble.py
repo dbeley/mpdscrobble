@@ -70,15 +70,21 @@ class MPDScrobbleLastFMNetwork(pylast.LastFMNetwork):
     """Class to interact with Last.FM."""
 
     def __init__(
-        self, username: str, password: str, api_key: str, api_secret: str
+        self,
+        username: str,
+        password: str,
+        api_key: str,
+        api_secret: str,
+        session_key: str = None,
     ) -> None:
         self.username = username
         pylast.LastFMNetwork.__init__(
             self,
             username=username,
-            password_hash=pylast.md5(password),
+            password_hash=pylast.md5(password) if password else None,
             api_key=api_key,
             api_secret=api_secret,
+            session_key=session_key,
         )
 
     def __str__(self) -> str:

@@ -7,6 +7,8 @@ import logging
 import time
 from typing import Optional
 
+from mpd import MPDError
+
 from mpdscrobble import constants
 
 from .mpdscrobble import MPDScrobbleMPDConnection, MPDScrobbleNetwork, MPDScrobbleTrack
@@ -23,39 +25,38 @@ def loop(
     networks: MPDScrobbleNetwork,
     client: MPDScrobbleMPDConnection,
     cached_song: Optional[MPDScrobbleTrack],
-) -> None:
-    while True:
-        time.sleep(constants.LOOP_DELAY)
-        current_song = client.mpdscrobble_currentsong()
-        if current_song and cached_song:
-            logger.debug(
-                "Current: %s\nCached: %s", current_song.debug(), cached_song.debug()
-            )
-            if cached_song != current_song:
-                if cached_song.percentage >= constants.SCROBBLE_PERCENTAGE:
-                    if not args.dry_run:
-                        logger.info("Sending scrobble for %s.", cached_song)
-                        networks.mpdscrobble_scrobble(cached_song)
-                    else:
-                        logger.warning(
-                            "Dry-run mode enabled. Would have scrobbled %s.",
-                            cached_song,
-                        )
-                networks.mpdscrobble_update_now_playing(current_song)
-        if not current_song and cached_song:
+) -> Optional[MPDScrobbleTrack]:
+    """Poll MPD once, scrobble/update as needed and return the song to cache."""
+    current_song = client.mpdscrobble_currentsong()
+    if current_song and cached_song:
+        logger.debug(
+            "Current: %s\nCached: %s", current_song.debug(), cached_song.debug()
+        )
+        if cached_song != current_song:
             if cached_song.percentage >= constants.SCROBBLE_PERCENTAGE:
                 if not args.dry_run:
-                    logger.info(
-                        "Sending scrobble for %s. Detected stopped playback.",
-                        cached_song,
-                    )
+                    logger.info("Sending scrobble for %s.", cached_song)
                     networks.mpdscrobble_scrobble(cached_song)
                 else:
                     logger.warning(
                         "Dry-run mode enabled. Would have scrobbled %s.",
                         cached_song,
                     )
-        cached_song = current_song
+            networks.mpdscrobble_update_now_playing(current_song)
+    if not current_song and cached_song:
+        if cached_song.percentage >= constants.SCROBBLE_PERCENTAGE:
+            if not args.dry_run:
+                logger.info(
+                    "Sending scrobble for %s. Detected stopped playback.",
+                    cached_song,
+                )
+                networks.mpdscrobble_scrobble(cached_song)
+            else:
+                logger.warning(
+                    "Dry-run mode enabled. Would have scrobbled %s.",
+                    cached_song,
+                )
+    return current_song
 
 
 def main():
@@ -75,6 +76,7 @@ def main():
     # Connection and network setup are retried as well: MPD or the scrobbling
     # services can be temporarily unreachable, which should not kill the daemon.
     connected = False
+    cached_song = None
     timeout = constants.DEFAULT_RESTART_DELAY
     while True:
         try:
@@ -84,8 +86,14 @@ def main():
                 client.mpdscrobble_connect(host, port)
                 connected = True
             networks = create_networks(config)
-            cached_song = client.mpdscrobble_currentsong()
-            loop(args, networks, client, cached_song)
+            # Keep the cached song so a track interrupted by the reconnection can
+            # still be scrobbled.
+            cached_song = loop(args, networks, client, cached_song)
+        except (MPDError, OSError) as error:
+            # MPD going away (restart, suspend, idle timeout) is expected: just
+            # reconnect, no traceback and no growing delay.
+            logger.warning("Lost connection to MPD (%s). Reconnecting.", error)
+            time.sleep(timeout)
         except Exception:
             logger.exception(
                 "mpdscrobble crashed. Waiting %s seconds before restarting.",
@@ -93,6 +101,10 @@ def main():
             )
             time.sleep(timeout)
             timeout = min(timeout * 2, constants.MAX_RESTART_DELAY)
+        else:
+            # A full successful poll: forget the previous failures.
+            timeout = constants.DEFAULT_RESTART_DELAY
+            time.sleep(constants.LOOP_DELAY)
 
 
 def parse_args() -> argparse.Namespace:
